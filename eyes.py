@@ -7,7 +7,7 @@ import winsound
 
 def main():
     while True:
-        sleep(1800)
+        #sleep(1800)
         win = tk.Tk()
         win.wm_attributes("-topmost", 1)
         winsound.PlaySound("preview.mp3", winsound.SND_ASYNC)

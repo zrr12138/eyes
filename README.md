@@ -9,6 +9,7 @@
 安装(开机自启)
 ```
 https://github.com/zrr12138/eyes.git
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 python eyes.py install
 ```
 卸载

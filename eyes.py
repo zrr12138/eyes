@@ -1,4 +1,7 @@
+import os
 import subprocess
+import sys
+import getpass
 import tkinter as tk
 from time import sleep
 
@@ -13,8 +16,8 @@ REMIND_STRING = "You've been using the computer for 60 minutes, it's time to tak
 ANSWER_STRING = "I got it"
 DELAY_TIME = 5.0
 CHECK_TEST_INTERVAL = 60  # Should not be too large, otherwise it will consume too much cpu resources
-LOG_FILE_NAME = "eyes.log"
-MAX_LOG_FILE_SIZE = 1024*1024*1024  # bytes
+LOG_FILE_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "eyes.log")  # Absolute path must be specified
+MAX_LOG_FILE_SIZE = 1024 * 1024 * 1024  # bytes
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +73,15 @@ def sleep_loop(total_time: int):
 
 
 def main():
+    logger.debug("sys.argv={}".format(sys.argv))
+    if "install" in sys.argv:
+        add_to_startup()
+        print("install success!")
+        return
+    if "uninstall" in sys.argv:
+        remove_from_startup()
+        print("uninstall success!")
+        return
     logger.info("eyes start")
     while True:
         sleep_loop(SLEEP_TIME)
@@ -79,12 +91,28 @@ def main():
 
 def log_init():
     logger.setLevel(logging.DEBUG)
-    rfh = logging.handlers.RotatingFileHandler(LOG_FILE_NAME, maxBytes=MAX_LOG_FILE_SIZE, backupCount=1,
+    rfh = logging.handlers.RotatingFileHandler(LOG_FILE_PATH, maxBytes=MAX_LOG_FILE_SIZE, backupCount=1,
                                                encoding="utf-8")
     rfh.setLevel(logging.DEBUG)
     formatter = logging.Formatter("%(asctime)s %(filename)s %(funcName)s %(levelname)s %(message)s")
     rfh.setFormatter(formatter)
     logger.addHandler(rfh)
+
+
+def add_to_startup():
+    file_path = os.path.realpath(__file__)
+    bat_path = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % getpass.getuser()
+    logger.debug("file_path={}".format(file_path))
+    logger.debug("start folder:{}".format(bat_path))
+    with open(os.path.join(bat_path, "start.bat"), "w") as bat_file:
+        bat_file.write(r'python "%s"' % file_path)
+    logger.info("set start with windows success!")
+
+
+def remove_from_startup():
+    bat_path = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % getpass.getuser()
+    os.remove(os.path.join(bat_path, "start.bat"))
+    logger.info("uninstall finish")
 
 
 if __name__ == '__main__':

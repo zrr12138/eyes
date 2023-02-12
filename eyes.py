@@ -10,14 +10,15 @@ import logging.handlers
 import winsound
 from pynput import mouse, keyboard
 
-SLEEP_TIME = 5
+SLEEP_TIME = 60*60
 REMIND_TITLE = "eyes"
 REMIND_STRING = "You've been using the computer for 60 minutes, it's time to take a break"
 ANSWER_STRING = "I got it"
-DELAY_TIME = 5.0
+DELAY_TIME = 10.0
 CHECK_TEST_INTERVAL = 60  # Should not be too large, otherwise it will consume too much cpu resources
 LOG_FILE_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "eyes.log")  # Absolute path must be specified
-MAX_LOG_FILE_SIZE = 1024 * 1024 * 1024  # bytes
+MAX_LOG_FILE_SIZE = 5 * 1024 * 1024  # bytes
+
 logger = logging.getLogger(__name__)
 
 

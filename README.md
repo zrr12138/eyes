@@ -6,15 +6,28 @@
 2. 用户进入锁屏状态则停止记录时间
 3. 支持开机自启
 
+以下命令适用于windows powershell
 安装(开机自启)
 ```
 https://github.com/zrr12138/eyes.git
+cd .\eyes\
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
-python eyes.py install
+python .\eyes.py install
 ```
 卸载
 ```
-python eyes.py uninstall
+python .\eyes.py uninstall
+```
+更新
+```
+cd .\eyes\
+python .\eyes.py uninstall
+cd ..
+rm .\eyes\
+https://github.com/zrr12138/eyes.git
+cd .\eyes\
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+python .\eyes.py install
 ```
 
 ## 参数配置

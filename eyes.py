@@ -10,7 +10,7 @@ import logging.handlers
 import winsound
 from pynput import mouse, keyboard
 
-SLEEP_TIME = 60*60
+SLEEP_TIME = 60 * 60
 REMIND_TITLE = "eyes"
 REMIND_STRING = "You've been using the computer for 60 minutes, it's time to take a break"
 ANSWER_STRING = "I got it"
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def is_windows_locked():
-    if 'LogonUI.exe' in str(subprocess.check_output('TASKLIST')):
+    if 'LogonUI.exe' in str(subprocess.check_output('TASKLIST', shell=True)):  # shell=True to avoid console appearing
         return True
     else:
         return False
@@ -68,6 +68,7 @@ def sleep_loop(total_time: int):
             logger.debug("windows is locked")
             continue
         else:
+            logger.debug("windows is unlocked")
             total_time -= CHECK_TEST_INTERVAL
     sleep(total_time)
     logger.info("end sleep loop")
@@ -102,11 +103,16 @@ def log_init():
 
 def add_to_startup():
     file_path = os.path.realpath(__file__)
-    bat_path = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % getpass.getuser()
+    vbs_path = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % getpass.getuser()
     logger.debug("file_path={}".format(file_path))
-    logger.debug("start folder:{}".format(bat_path))
-    with open(os.path.join(bat_path, "start.bat"), "w") as bat_file:
-        bat_file.write(r'python "%s"' % file_path)
+    logger.debug("start folder:{}".format(vbs_path))
+    with open(os.path.join(vbs_path, "eyes.vbs"), "w") as vbs_file:
+        vbs_file.write('Set oShell = CreateObject ("Wscript.Shell")' + '\n')
+        vbs_file.write('Dim strArgs' + '\n')
+        vbs_file.write('strArgs = "pythonw {}"'.format(
+            file_path) + '\n')  # pythonw making it possible for the script to asynchronously run in the background
+        # without starting a command line console
+        vbs_file.write('oShell.Run strArgs, 0, false')
     logger.info("set start with windows success!")
 
 

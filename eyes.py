@@ -66,11 +66,18 @@ def delay_to_remind():
 
 
 def sleep_loop(total_time: int):
+    total_time_backup = total_time
     logger.info("start sleep loop , total time = {}".format(total_time))
+    lock_screen_time = 0
     while total_time > CHECK_TEST_INTERVAL:  # Check if windows is locked every 20 seconds
         sleep(CHECK_TEST_INTERVAL)
+        logger.debug("left time={:}".format(total_time))
         if is_windows_locked():
             logger.debug("windows is locked")
+            lock_screen_time += CHECK_TEST_INTERVAL
+            if lock_screen_time > 10 * 60:
+                total_time = total_time_backup
+                lock_screen_time = 0
             continue
         else:
             logger.debug("windows is unlocked")

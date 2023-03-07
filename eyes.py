@@ -98,11 +98,12 @@ def main():
         return
     logger.info("eyes start")
     while True:
-        sleep_loop(SLEEP_TIME)
-        delay_to_remind()
-        remind()
-
-
+        try:
+            sleep_loop(SLEEP_TIME)
+            delay_to_remind()
+            remind()
+        except Exception as e:
+            logger.error(e.args)
 def log_init():
     logger.setLevel(logging.DEBUG)
     rfh = logging.handlers.RotatingFileHandler(LOG_FILE_PATH, maxBytes=MAX_LOG_FILE_SIZE, backupCount=1,

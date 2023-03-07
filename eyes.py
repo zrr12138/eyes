@@ -8,8 +8,10 @@ from time import sleep
 import logging
 import logging.handlers
 import winsound
+import ctypes
 from pynput import mouse, keyboard
 
+LOCK_SCREEN = False  # Lock screen to remind
 SLEEP_TIME = 60 * 60
 REMIND_TITLE = "eyes"
 REMIND_STRING = "You've been using the computer for 60 minutes, it's time to take a break"
@@ -30,16 +32,19 @@ def is_windows_locked():
 
 
 def remind():
-    logger.info("remind")
-    win = tk.Tk()
-    win.wm_attributes("-topmost", 1)  # means "Yes, do draw the window on top of all the others."
-    winsound.PlaySound("preview.mp3", winsound.SND_ASYNC)
-    win.title(REMIND_TITLE)
-    win.main = tk.Label(win, text=REMIND_STRING, font=("微软雅黑", 15, "bold"))
-    win.main.pack()
-    answer_button = tk.Button(win, text=ANSWER_STRING, command=win.destroy)
-    answer_button.pack()
-    win.mainloop()
+    logger.info("remind LOCK_SCREEN={}".format(LOCK_SCREEN))
+    if LOCK_SCREEN:
+        ctypes.windll.user32.LockWorkStation()  # lock the screen
+    else:
+        win = tk.Tk()
+        win.wm_attributes("-topmost", 1)  # means "Yes, do draw the window on top of all the others."
+        winsound.PlaySound("preview.mp3", winsound.SND_ASYNC)
+        win.title(REMIND_TITLE)
+        win.main = tk.Label(win, text=REMIND_STRING, font=("微软雅黑", 15, "bold"))
+        win.main.pack()
+        answer_button = tk.Button(win, text=ANSWER_STRING, command=win.destroy)
+        answer_button.pack()
+        win.mainloop()
     logger.info("remain over")
 
 
